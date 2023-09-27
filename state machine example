@@ -1,0 +1,209 @@
+#include <Wire.h>
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_BMP085.h>
+#include <Servo.h>
+#include <PID_v1.h>
+#include <SPI.h>
+#include <SD.h>
+#include <LoRa.h>
+#include <TinyGPS++.h>
+#include <SoftwareSerial.h>
+
+// Define sensor objects
+Adafruit_MPU6050 mpu;
+Adafruit_BMP085 bmp;
+TinyGPSPlus gps;
+SoftwareSerial gpsSerial(8, 9);
+
+// Define servo objects
+Servo pitchServo;
+Servo yawServo;
+Servo rollServo1;
+Servo rollServo2;
+Servo parachuteServo;
+
+// Define pin constants
+const int pitchServoPin = 3;
+const int yawServoPin = 4;
+const int rollServo1Pin = 5;
+const int rollServo2Pin = 6;
+const int parachuteServoPin = 7;
+const int buzzerPin = 10;
+const int ledPin = 11;
+
+// Define PID controller parameters
+double pidInputPitch, pidInputRoll, pidInputYaw;
+double pidOutputPitch, pidOutputRoll, pidOutputYaw;
+double pidSetpointPitch = 0.0;
+double pidSetpointRoll = 0.0;
+double pidSetpointYaw = 0.0;
+double Kp = 1.0;
+double Ki = 0.0;
+double Kd = 0.0;
+PID pitchPID(&pidInputPitch, &pidOutputPitch, &pidSetpointPitch, Kp, Ki, Kd, DIRECT);
+PID rollPID(&pidInputRoll, &pidOutputRoll, &pidSetpointRoll, Kp, Ki, Kd, DIRECT);
+PID yawPID(&pidInputYaw, &pidOutputYaw, &pidSetpointYaw, Kp, Ki, Kd, DIRECT);
+
+// Other variables
+const unsigned long sampleTime = 10;
+unsigned long previousMillis = 0;
+double pitchAngle = 0.0;
+double rollAngle = 0.0;
+double yawAngle = 0.0;
+const double targetAltitude = 1000.0;
+bool parachuteDeployed = false;
+unsigned long launchTime = 0;
+const unsigned long deployDelay = 10000;
+bool imuAbnormal = false;
+double previousAcceleration = 0.0;
+unsigned long imuCheckStartTime = 0;
+const unsigned long imuCheckInterval = 10000;
+double initialAltitude = 0.0;
+double maxAltitudeChange = 0.0;
+double maxAccelerationChange = 0.0;
+
+// Kalman filter parameters
+double Q_angle = 0.001;
+double Q_bias = 0.003;
+double R_measure = 0.03;
+double gyroBiasX = 0.0;
+double gyroBiasY = 0.0;
+double gyroBiasZ = 0.0;
+
+File dataFile; // File object for SD card
+
+// GPS Setup
+TinyGPSPlus gps;
+SoftwareSerial gpsSerial(8, 9); // RX, TX
+
+bool isCalibrating = false; // Flag to indicate whether calibration is in progress
+
+// State machine states
+enum State {
+  CALIBRATION,
+  FLIGHT,
+  PARACHUTE_DEPLOYMENT
+};
+
+State currentState = CALIBRATION;
+
+void kalmanFilterUpdate(double &angle, double &bias, double rate, double measurement) {
+  // Kalman filter code here
+}
+
+void startCalibration() {
+  // Calibration code here
+}
+
+void setup() {
+  // Initialize hardware and sensors
+  Wire.begin();
+  Serial.begin(9600);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+
+  // Indicate IMU calibration
+  digitalWrite(buzzerPin, HIGH);
+  digitalWrite(ledPin, HIGH);
+  delay(3000); // Wait for 3 seconds to indicate calibration
+  digitalWrite(buzzerPin, LOW);
+  digitalWrite(ledPin, LOW);
+
+  if (!mpu.begin()) {
+    Serial.println("Failed to find MPU6050. Please check wiring.");
+    while (1);
+  }
+
+  if (!bmp.begin()) {
+    Serial.println("Failed to find BMP180. Please check wiring.");
+    while (1);
+  }
+
+  // GPS Initialization
+  gpsSerial.begin(9600);
+
+  // Servo attachments and PID setup
+  pitchServo.attach(pitchServoPin);
+  yawServo.attach(yawServoPin);
+  rollServo1.attach(rollServo1Pin);
+  rollServo2.attach(rollServo2Pin);
+  parachuteServo.attach(parachuteServoPin);
+
+  // PID setup
+  pitchPID.SetOutputLimits(-90.0, 90.0);
+  rollPID.SetOutputLimits(-90.0, 90.0);
+  yawPID.SetOutputLimits(-90.0, 90.0);
+
+  pitchPID.SetSampleTime(sampleTime);
+  rollPID.SetSampleTime(sampleTime);
+  yawPID.SetSampleTime(sampleTime);
+
+  pitchPID.SetMode(AUTOMATIC);
+  rollPID.SetMode(AUTOMATIC);
+  yawPID.SetMode(AUTOMATIC);
+
+  pitchServo.write(90);
+  yawServo.write(90);
+  rollServo1.write(90);
+  rollServo2.write(90);
+
+  launchTime = millis();
+  imuCheckStartTime = millis();
+  initialAltitude = bmp.readAltitude();
+
+  // Create a file on the SD card
+  dataFile = SD.open("sensor_data.txt", FILE_WRITE);
+
+  if (dataFile) {
+    dataFile.println("Time (ms), Pitch (deg), Roll (deg), Yaw (deg), Altitude (m), Latitude, Longitude");
+    dataFile.close();
+  } else {
+    Serial.println("Error opening data file.");
+  }
+
+  // Enter calibration state
+  currentState = CALIBRATION;
+}
+
+void loop() {
+  switch (currentState) {
+    case CALIBRATION:
+      // Calibration logic
+      if (!isCalibrating) {
+        startCalibration();
+      }
+      // Transition to flight state when calibration is complete
+      currentState = FLIGHT;
+      break;
+      
+    case FLIGHT:
+      // Flight control logic
+      // Implement your flight control code here
+      break;
+      
+    case PARACHUTE_DEPLOYMENT:
+      // Parachute deployment logic
+      // Implement your parachute deployment code here
+      break;
+  }
+}
+
+void calibrateMPU6050() {
+  // MPU6050 calibration code here
+}
+
+void logSensorData() {
+  // Logging sensor data to SD card code here
+}
+
+void transmitSensorData() {
+  // Transmitting sensor data via LoRa code here
+}
+
+void checkParachuteDeployment() {
+  // Parachute deployment logic here
+}
+
+void updateGPS() {
+  // GPS update code here
+}
