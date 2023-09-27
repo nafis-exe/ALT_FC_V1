@@ -1,6 +1,7 @@
 # Rocket Control System
 
 This repository contains the source code for a rocket control system that uses an Arduino board with various sensors and actuators. The system is designed to control a model rocket's flight parameters, log sensor data, and communicate with a ground station over LoRa.
+https://github.com/nafis-exe/AERD_ALT_FC_V1/blob/main/Rocket%20Flight%20Control%20Code%20Explanation.md#rocket-flight-control-code-explanation
 
 ## Table of Contents
 
