@@ -1,67 +1,104 @@
-# AERD_ALT_FC_V1
+# Rocket Control System
 
-Rocket Flight Controller
-Overview
-This Arduino-based Rocket Flight Controller is designed to control and monitor the flight of a rocket. It incorporates an MPU6050 IMU sensor for orientation tracking, a BMP180 sensor for altitude measurements, GPS for location tracking, and LoRa communication for remote control and telemetry. The controller can perform IMU calibration, log sensor data to an SD card, transmit data via LoRa, and deploy a parachute at a specified altitude.
+This repository contains the source code for a rocket control system that uses an Arduino board with various sensors and actuators. The system is designed to control a model rocket's flight parameters, log sensor data, and communicate with a ground station over LoRa.
 
-Table of Contents
-Features
-Hardware Requirements
-Software Requirements
-Installation
-Usage
-Calibrating MPU6050
-Remote Control via LoRa
-Data Logging
-Contributing
-License
-Features
-IMU calibration for accurate orientation tracking.
-Real-time sensor data logging to an SD card.
-Data transmission via LoRa for remote monitoring.
-Parachute deployment based on altitude and acceleration.
-GPS-based location tracking with GPS status indication.
-Hardware Requirements
-Arduino board (e.g., Arduino Uno or Arduino Mega)
-MPU6050 IMU sensor
-BMP180 or BMP085 altitude sensor
-GPS module (compatible with TinyGPS++)
-LoRa module (e.g., SX1278 or similar)
-Servo motors for controlling pitch, roll, and parachute
-Buzzer and LED for status indication
-MicroSD card module (for data logging)
-Various resistors and wires for connections
-Software Requirements
-Arduino IDE with necessary libraries (Wire, Adafruit MPU6050, Adafruit BMP085, Servo, PID_v1, SPI, SD, LoRa, TinyGPS++, SoftwareSerial)
-LoRa library for Arduino (install via Arduino Library Manager)
-MPU6050 and BMP085/BMP180 calibration tool (optional)
-Installation
-Clone or download this repository to your local machine.
-Open the Arduino IDE and ensure you have all the required libraries installed via the Library Manager.
-Connect the hardware components according to the provided pin assignments and wiring diagram (if available).
-Load the RocketFlightController.ino sketch into your Arduino IDE.
-Upload the sketch to your Arduino board.
-Usage
-Calibrating MPU6050
-Before launching the rocket, you should calibrate the MPU6050 for accurate orientation tracking. To start the calibration process:
+## Table of Contents
 
-Power on the rocket flight controller.
-Send a calibration command over the serial connection or LoRa communication to initiate calibration.
-Follow the on-screen instructions to place the MPU6050 on a flat, stable surface. Ensure it remains stationary during calibration.
-Wait for the calibration process to complete.
-Remote Control via LoRa
-You can send commands to the rocket flight controller over LoRa to perform actions like initiating calibration or pre-launch checks. Refer to the communication protocol for details on the commands and responses.
+- [Features](#features)
+- [Hardware Requirements](#hardware-requirements)
+- [Software Requirements](#software-requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Calibration](#calibration)
+- [Contributing](#contributing)
+- [License](#license)
 
-Data Logging
-The controller can log sensor data, including pitch, roll, yaw, altitude, latitude, and longitude, to an SD card. Data is saved in CSV format, and you can access it after the flight.
+## Features
 
-Contributing
-Feel free to contribute to this project by creating issues, suggesting improvements, or submitting pull requests. Your input is valuable in making this flight controller more robust and reliable.
+- **IMU Integration**: Utilizes an MPU6050 sensor for accurate Inertial Measurement Unit (IMU) data.
+- **GPS**: Integrates with a GPS module for location and satellite data.
+- **PID Control**: Implements PID control for pitch, roll, and yaw stabilization.
+- **LoRa Communication**: Sends sensor data and rocket status to a ground station via LoRa.
+- **Parachute Deployment**: Deploys a parachute at a specified altitude based on sensor data.
+- **Data Logging**: Logs sensor data to an SD card for post-flight analysis.
 
-License
-This project is licensed under the MIT License.
+## Hardware Requirements
 
-Feel free to adapt and expand upon this README to suit your project's specific needs. It serves as a helpful guide for users and contributors to understand and use your code effectively.
+To run this code, you'll need the following hardware components:
+
+- Arduino board (e.g., mega or stm32)
+- MPU6050 accelerometer and gyroscope module
+- BMP180 or BMP085 barometric pressure sensor
+- GPS module (e.g., NEO-6M)
+- Servo motors for pitch, yaw, and roll control
+- Parachute deployment servo motor
+- SD card module for data logging
+- LoRa module (e.g., SX1278 or compatible)
+- Buzzer and LED for status indication
+
+
+## Software Requirements
+
+You'll need the following software:
+
+- Arduino IDE (https://www.arduino.cc/en/software)
+- Required Arduino libraries (Adafruit MPU6050, Adafruit BMP085, Adafruit GPS, PID_v1, TinyGPS++, SoftwareSerial, and LoRa)
+- will add a processing flight telemetrty visulizer soon
+## Installation
+
+1. Clone this repository to your local machine:
+
+   ```shell
+   git clone https://github.com/your-username/rocket-control-system.git
+   Open the Arduino IDE and load the rocket_control_system.ino sketch.
+
+Install the required libraries using the Arduino Library Manager:
+
+- Adafruit MPU6050
+- Adafruit BMP085 (or BMP180)
+- Adafruit GPS
+- PID_v1
+- TinyGPS++
+- SoftwareSerial
+- LoRa
+- Configure the Arduino IDE for your specific board(download stm32 manager for stm32 board)
+
+# Usage
+Before launching the rocket, ensure that you have calibrated the MPU6050 sensor by following the calibration procedure described below.
+
+# Calibration:
+
+To calibrate the MPU6050 sensor, you can send a calibration command to the Arduino board either via serial communication or LoRa. Make sure the rocket is on a flat, stable surface and not moving during calibration.
+
+shell
+Copy code
+Send calibration command over serial (replace COMx with your serial port)
+echo "CALIBRATE" > COMx
+Launch:
+
+After calibration, you can initiate the rocket launch. Once the rocket reaches the target altitude and conditions are met, the system will automatically deploy the parachute. The status and sensor data will be transmitted via LoRa to a ground station.
+
+# Monitoring:
+
+You can monitor the rocket's status and data from the ground station. The transmitted data includes pitch, roll, yaw angles, altitude, latitude, and longitude.
+
+# Calibration
+Calibrating the MPU6050 sensor is a crucial step to ensure accurate measurements. During calibration, the sensor should be placed on a flat and stable surface, and the calibration command should be sent.
+
+Ensure the rocket is on a stable surface.
+Send the calibration command to the Arduino (as shown in the Usage section).
+Wait for the calibration process to complete. The offsets will be printed to the Serial Monitor.
+# Contributing
+Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
+for now i would love my teamates to contribute 
+
+Fork the repository.
+Create a new branch for your feature or bug fix.
+Make your changes.
+Test your changes thoroughly.
+Create a pull request with a clear description of your changes.
+# License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
 
 
