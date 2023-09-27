@@ -35,7 +35,37 @@ To run this code, you'll need the following hardware components:
 - SD card module for data logging
 - LoRa module (e.g., SX1278 or compatible)
 - Buzzer and LED for status indication
+MPU6050 Accelerometer/Gyroscope Module:
 
+Connect the VCC pin to 5V on the Arduino.
+Connect the GND pin to GND on the Arduino.
+Connect the SDA pin to A4 (analog pin) on the Arduino.
+Connect the SCL pin to A5 (analog pin) on the Arduino.
+BMP180/BMP085 Barometric Pressure Sensor:
+
+Connect the VCC pin to 5V on the Arduino.
+Connect the GND pin to GND on the Arduino.
+Connect the SDA pin to A4 (analog pin) on the Arduino.
+Connect the SCL pin to A5 (analog pin) on the Arduino.
+GPS Module (e.g., NEO-6M):
+
+Connect the VCC pin to 5V on the Arduino.
+Connect the GND pin to GND on the Arduino.
+Connect the RX pin of the GPS module to TX (pin 1) on the Arduino (you may need a voltage divider or level shifter).
+Connect the TX pin of the GPS module to RX (pin 0) on the Arduino (you may need a voltage divider or level shifter).
+Servo Motors (Pitch, Yaw, Roll, and Parachute):
+
+Connect the signal (control) wire of each servo to the corresponding PWM pins on the Arduino (e.g., pitchServo to pin 3, yawServo to pin 4, rollServo1 to pin 5, rollServo2 to pin 6, and parachuteServo to pin 7).
+Buzzer and LED:
+
+Connect one leg of the buzzer to a digital pin (e.g., pin 10).
+Connect one leg of the LED to a digital pin (e.g., pin 11).
+LoRa Module (e.g., SX1278):
+
+Connect the LoRa module according to its pinout to the appropriate digital pins on the Arduino (e.g., SPI pins for communication).
+SD Card Module (for Data Logging):
+
+Connect the SD card module according to its pinout to the appropriate digital pins on the Arduino (e.g., MOSI, MISO, SCK, CS).
 
 ## Software Requirements
 
